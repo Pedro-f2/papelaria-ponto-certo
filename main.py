@@ -1,4 +1,25 @@
 import os 
+import csv
+
+if os.path.exists("Produtos.cvs"):
+    produtos = carregar_produtos()
+else:
+    produtos = []
+
+def salvar_produtos(produtos):
+    with open("produtos.csv", "w", newline="", encoding="utf-8") as f:
+        escritor = csv.writer(f)
+        escritor.writerow(["Nome", "Preço"])
+
+        for produto in produtos:
+            escritor.writerow(produto)
+
+def carregar_produtos():
+    with open("produtos.csv", "r", encoding="utf-8") as f:
+        leitor = csv.reader(f)
+        next(leitor)
+        for linha in leitor:  
+            produtos.append(linha)
 
 def mostrar_menu(qtd_produtos):
     print("---------- Menu ----------\n")
@@ -6,7 +27,32 @@ def mostrar_menu(qtd_produtos):
     print("1 - Cadastrar produto")
     print("2 - Consultar produto")
     print("3 - Listar produtos")
+    print("4 - Alterar produto")
     print("0 - Sair\n")
+
+def alternar_produto(produtos):
+    nome_busca = input("Digite o nome do produto: ")
+    encontra = False
+
+    for produto in produtos:
+        if produto[0].lower() == nome_busca.lower():
+            encontrado = True
+            print(f"Produto encontrado: {produto[0]} - R$ {produto[1]:.2f}")
+            novo_nome = input("Novo nome: ")
+            while True:
+                novo_preco = float(input("Novo preço: "))
+
+                if novo_preco >= 0:
+                    break
+                else:
+                    print("O preço não pode ser negativo.")
+            produto[0] = novo_nome
+            produto[1] = novo_preco
+            salvar_produtos(produtos)
+
+            print("Produto alterado com sucesso!")
+            break
+
 
 def cadastrar_produto(produtos):
     nome = input("Nome do produto: ")
@@ -50,9 +96,6 @@ def listar_produtos(produtos):
         input("\nPressione entre para continuar...")
 
 
-
-produtos = []
-
 print(f"´" * 15)
 
 while True:
@@ -64,6 +107,9 @@ while True:
         consultar_produto(produtos)
     elif opcao == "3":
         listar_produtos(produtos)
+    elif opcao == "4":
+        alterar_produto(produtos)
+        input("\nPressione enter para continuar...")
     elif opcao == "0":
         break
     else:
